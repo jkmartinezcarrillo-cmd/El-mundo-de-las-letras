@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis Sonidos, Palabras Nuevas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F8FF; --primary:#6C7BE0; --secondary:#9AA8F0; --light:#E7ECFF;
+  --accent:#FFD23F; --shadow:#4F5CC0;
+  --texto:#37375A; --ok:#3DBE6E; --ok-ring:#FFD23F; --mal:#E86A6A;
+  --display:'Fredoka','Trebuchet MS','Segoe UI',system-ui,sans-serif;
+  --body:'Nunito','Trebuchet MS',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  font-family:var(--body); color:var(--texto);
+  background:var(--bg);
+  transition:background .5s ease;
+  min-height:100%; overflow-x:hidden; position:relative;
+}
+
+/* ----------- Ambientación flotante ----------- */
+#ambiente{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.flota{position:absolute;font-size:2.2rem;opacity:.18;animation:subeBaja linear infinite;}
+@keyframes subeBaja{
+  0%{transform:translateY(20px) rotate(0deg);}
+  50%{transform:translateY(-20px) rotate(8deg);}
+  100%{transform:translateY(20px) rotate(0deg);}
+}
+
+.wrap{position:relative;z-index:1;max-width:840px;margin:0 auto;padding:18px 16px 40px;}
+
+/* ----------- Pantallas ----------- */
+.pantalla{display:none;animation:aparece .45s ease;}
+.pantalla.activa{display:block;}
+@keyframes aparece{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+
+.card{background:#fff;border-radius:28px;padding:26px 22px;box-shadow:0 14px 36px rgba(80,92,192,.14);}
+
+/* ----------- Inicio ----------- */
+.hero{text-align:center;padding:14px 6px 26px;}
+.titulo{
+  font-family:var(--display);font-weight:700;font-size:3rem;line-height:1.04;
+  letter-spacing:.5px;
+}
+.titulo .ini{font-weight:700;}
+.subt{font-family:var(--display);font-size:1.35rem;color:var(--primary);margin-top:8px;font-weight:600;}
+.desc{max-width:560px;margin:14px auto 0;font-size:1.08rem;line-height:1.5;opacity:.85;}
+
+.mundos{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:8px;}
+.mundo{
+  border:none;cursor:pointer;text-align:left;border-radius:24px;padding:18px;color:#fff;
+  font-family:var(--body);box-shadow:0 10px 0 rgba(0,0,0,.12);transition:transform .12s;
+  display:flex;align-items:center;gap:14px;
+}
+.mundo:active{transform:translateY(5px);box-shadow:0 5px 0 rgba(0,0,0,.12);}
+.mundo .insignia{
+  flex:0 0 auto;width:62px;height:62px;border-radius:18px;background:rgba(255,255,255,.28);
+  display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:1.9rem;position:relative;
+}
+.mundo .insignia .masc{position:absolute;bottom:-8px;right:-8px;font-size:1.5rem;}
+.mundo .info .nm{font-weight:600;font-size:.82rem;opacity:.9;}
+.mundo .info .tt{font-family:var(--display);font-weight:600;font-size:1.25rem;}
+.mundo .info .sb{font-size:.86rem;opacity:.95;}
+.mundo.final{grid-column:1 / -1;justify-content:center;text-align:center;
+  background:linear-gradient(100deg,#4FB6E0,#54C07A 35%,#E87FB8 70%,#2FC2BE);}
+.mundo.final .insignia{font-size:1.6rem;}
+
+/* ----------- Lección ----------- */
+.lec-top{text-align:center;}
+.lec-icono{
+  width:96px;height:96px;border-radius:28px;margin:0 auto 10px;display:grid;place-items:center;
+  font-family:var(--display);font-weight:700;font-size:3rem;color:#fff;
+  background:var(--primary);box-shadow:0 8px 0 var(--shadow);position:relative;
+}
+.lec-icono .masc{position:absolute;bottom:-10px;right:-12px;font-size:2.2rem;}
+.lec-titulo{font-family:var(--display);font-size:1.9rem;color:var(--primary);font-weight:700;}
+.lec-masc{font-size:1rem;opacity:.7;margin-bottom:4px;}
+.lec-exp{font-size:1.12rem;line-height:1.55;margin:14px 4px;text-align:center;}
+.clave{
+  background:var(--light);border-left:8px solid var(--accent);border-radius:16px;
+  padding:14px 18px;margin:16px 0;font-size:1.06rem;line-height:1.5;
+}
+.clave b{color:var(--primary);}
+.clave .et{display:block;font-family:var(--display);font-weight:600;color:var(--shadow);margin-bottom:4px;}
+.conceptos{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px;}
+.concepto{background:var(--light);border-radius:18px;padding:14px 8px;text-align:center;}
+.concepto .ic{font-size:2rem;display:block;}
+.concepto .ti{font-family:var(--display);font-weight:600;color:var(--primary);font-size:.95rem;margin:4px 0 2px;}
+.concepto .tx{font-size:.86rem;line-height:1.3;}
+
+/* ----------- Botones ----------- */
+.btn{
+  border:none;cursor:pointer;font-family:var(--display);font-weight:600;font-size:1.15rem;color:#fff;
+  background:var(--primary);padding:14px 32px;border-radius:20px;box-shadow:0 6px 0 var(--shadow);
+  transition:transform .1s;margin:6px;
+}
+.btn:active{transform:translateY(5px);box-shadow:none;}
+.btn.suave{background:#dfe3f0;color:var(--texto);box-shadow:0 6px 0 #c3c8da;}
+.btn.acento{background:var(--accent);color:#5a4a00;box-shadow:0 6px 0 #d6a800;}
+.centro{text-align:center;margin-top:18px;}
+
+/* ----------- Encabezado de juego ----------- */
+.hud{background:#fff;border-radius:22px;padding:12px 16px;box-shadow:0 10px 26px rgba(80,92,192,.12);margin-bottom:14px;}
+.hud-fila{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.hud-titulo{font-family:var(--display);font-weight:600;color:var(--primary);font-size:1.15rem;}
+.iconbtn{
+  border:none;cursor:pointer;width:44px;height:44px;border-radius:14px;font-size:1.2rem;
+  background:var(--light);color:var(--primary);box-shadow:0 4px 0 var(--secondary);transition:transform .1s;
+}
+.iconbtn:active{transform:translateY(3px);box-shadow:none;}
+.iconbtn.off{background:#e2e2ea;color:#9a9aa8;box-shadow:0 4px 0 #c8c8d2;}
+.spacer{margin-left:auto;}
+.hud-stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.chip-stat{background:var(--light);border-radius:14px;padding:7px 13px;font-weight:700;font-size:1rem;display:flex;align-items:center;gap:6px;}
+.vidas{letter-spacing:2px;}
+.barra-cont{background:#e9ecf6;border-radius:14px;height:14px;overflow:hidden;margin-top:10px;}
+.barra{height:100%;width:0;border-radius:14px;background:linear-gradient(90deg,var(--secondary),var(--primary));transition:width .4s;}
+.tiempo-cont{background:#e9ecf6;border-radius:10px;height:10px;overflow:hidden;margin-top:8px;}
+.tiempo{height:100%;width:100%;border-radius:10px;background:var(--ok);transition:width .1s linear,background .3s;}
+.tiempo.poco{background:var(--mal);}
+
+/* ----------- Tarjeta de nivel ----------- */
+.mision{display:inline-block;font-family:var(--display);font-weight:600;background:var(--primary);color:#fff;
+  border-radius:14px;padding:6px 14px;font-size:.95rem;}
+.meta{display:inline-block;font-size:.82rem;background:var(--light);color:var(--shadow);border-radius:12px;padding:5px 12px;margin-left:6px;}
+.frag{text-align:center;margin:18px 0 6px;}
+.frag-emoji{font-size:5rem;line-height:1;animation:saltito .5s ease;}
+@keyframes saltito{0%{transform:scale(.5);}60%{transform:scale(1.12);}100%{transform:scale(1);}}
+.frag-word{font-family:var(--display);font-weight:600;font-size:1.5rem;color:var(--primary);margin-top:4px;}
+.frag-letra{font-family:var(--display);font-weight:700;font-size:4.5rem;color:var(--primary);letter-spacing:10px;}
+.frag-silabas{font-family:var(--display);font-weight:700;font-size:2.6rem;color:var(--primary);letter-spacing:2px;}
+.frag-silabas .mas{color:var(--accent);}
+.leer{border:none;cursor:pointer;background:var(--secondary);color:#fff;border-radius:14px;
+  padding:8px 16px;font-family:var(--display);font-weight:600;font-size:1rem;box-shadow:0 4px 0 var(--shadow);}
+.leer:active{transform:translateY(3px);box-shadow:none;}
+.pista{background:var(--light);border-radius:16px;padding:12px 16px;margin:14px 0;font-size:1.02rem;}
+.pista b{color:var(--shadow);}
+.pregunta{text-align:center;font-family:var(--display);font-weight:600;font-size:1.4rem;margin:8px 0 16px;}
+.opciones{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;}
+.opcion{
+  border:none;cursor:pointer;font-family:var(--display);font-weight:700;font-size:1.4rem;color:#fff;
+  background:var(--primary);box-shadow:0 6px 0 var(--shadow);border-radius:22px;
+  min-width:120px;padding:18px 20px;transition:transform .1s;position:relative;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.opcion .em{font-size:2.6rem;line-height:1;}
+.opcion:active{transform:translateY(5px);box-shadow:none;}
+.opcion:disabled{cursor:default;}
+.opcion.correcta{background:var(--ok)!important;box-shadow:0 0 0 5px var(--ok-ring)!important;animation:pop .4s;}
+.opcion.incorrecta{background:var(--mal)!important;box-shadow:none!important;opacity:.85;animation:tiembla .4s;}
+.opcion .marca{position:absolute;top:-12px;right:-10px;font-size:1.6rem;display:none;}
+.opcion.correcta .marca{display:block;}
+.opcion.incorrecta .marca{display:block;}
+@keyframes pop{0%{transform:scale(1);}50%{transform:scale(1.14);}100%{transform:scale(1);}}
+@keyframes tiembla{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}50%{transform:translateX(8px);}75%{transform:translateX(-6px);}}
+
+/* ----------- Modal ----------- */
+#modal{position:fixed;inset:0;z-index:60;background:rgba(40,40,70,.45);display:none;align-items:center;justify-content:center;padding:20px;}
+#modal.activo{display:flex;animation:aparece .3s;}
+.modal-box{background:#fff;border-radius:28px;max-width:440px;width:100%;padding:28px 24px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.25);animation:saltito .4s ease;}
+.modal-emoji{font-size:3.4rem;}
+.modal-titulo{font-family:var(--display);font-weight:700;font-size:1.7rem;margin:6px 0;}
+.modal-titulo.bien{color:var(--ok);}
+.modal-titulo.casi{color:#E8973A;}
+.modal-texto{font-size:1.06rem;line-height:1.5;margin:8px 0;}
+.modal-recuerda{background:var(--light);border-radius:16px;padding:10px 14px;margin:12px 0;font-size:1rem;}
+.modal-recuerda .et{font-family:var(--display);font-weight:600;color:var(--shadow);}
+
+/* ----------- Fin de mundo ----------- */
+.fin-emoji{font-size:4.5rem;}
+.fin-estrellas{font-size:2.6rem;letter-spacing:6px;margin:8px 0;}
+
+/* ----------- Confeti ----------- */
+#confeti{position:fixed;inset:0;pointer-events:none;z-index:70;overflow:hidden;}
+.conf{position:absolute;width:13px;height:13px;border-radius:3px;animation:cae linear forwards;}
+@keyframes cae{to{transform:translateY(110vh) rotate(720deg);opacity:.2;}}
+
+/* ----------- Responsivo ----------- */
+@media(max-width:560px){
+  .titulo{font-size:2.2rem;}
+  .mundos{grid-template-columns:1fr;}
+  .conceptos{grid-template-columns:1fr;}
+  .frag-emoji{font-size:4.2rem;}
+  .frag-letra{font-size:3.4rem;}
+  .opcion{min-width:96px;font-size:1.2rem;padding:14px;}
+  .opcion .em{font-size:2.2rem;}
+}
+:focus-visible{outline:4px solid var(--accent);outline-offset:3px;}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+
+<div id="ambiente"></div>
+
+<div class="wrap">
+
+  <!-- ================= INICIO ================= -->
+  <section class="pantalla activa" id="inicio">
+    <div class="hero">
+      <h1 class="titulo">
+        <span class="ini" style="color:#4FB6E0">M</span>is
+        <span class="ini" style="color:#54C07A">S</span>onidos,
+        <span class="ini" style="color:#E87FB8">P</span>alabras
+        <span class="ini" style="color:#2FC2BE">N</span>uevas
+      </h1>
+      <p class="subt">Explorando mis primeras consonantes</p>
+      <p class="desc">El lugar donde jugar y aprender a leer van de la mano. Acompáñanos a descubrir los sonidos, sílabas y palabras más maravillosas.</p>
+      <div style="margin-top:14px"><button class="iconbtn" id="sonidoInicio" title="Activar o silenciar el sonido">🔊</button></div>
+    </div>
+    <div class="mundos" id="gridMundos"></div>
+  </section>
+
+  <!-- ================= LECCIÓN ================= -->
+  <section class="pantalla" id="leccion">
+    <div class="card" id="contLeccion"></div>
+  </section>
+
+  <!-- ================= JUEGO ================= -->
+  <section class="pantalla" id="juego">
+    <div class="hud">
+      <div class="hud-fila">
+        <button class="iconbtn" onclick="irInicio()" title="Volver al inicio">🏠</button>
+        <span class="hud-titulo" id="hudTitulo"></span>
+        <button class="iconbtn spacer" id="sonidoJuego" title="Activar o silenciar el sonido">🔊</button>
+      </div>
+      <div class="hud-stats">
+        <span class="chip-stat">⭐ <span id="hudPuntos">0</span></span>
+        <span class="chip-stat vidas" id="hudVidas">❤️❤️❤️</span>
+        <span class="chip-stat" id="hudNivel">Nivel 1</span>
+      </div>
+      <div class="barra-cont"><div class="barra" id="hudBarra"></div></div>
+      <div class="tiempo-cont"><div class="tiempo" id="hudTiempo"></div></div>
+    </div>
+    <div class="card" id="contNivel"></div>
+  </section>
+
+  <!-- ================= FIN DE MUNDO ================= -->
+  <section class="pantalla" id="fin">
+    <div class="card centro" id="contFin"></div>
+  </section>
+
+</div>
+
+<!-- Modal de retroalimentación -->
+<div id="modal"><div class="modal-box" id="modalBox"></div></div>
+<div id="confeti"></div>
+
+<script>
+/* =======================================================================
+   DATOS DE LOS 5 MUNDOS  (fáciles de editar)
+   Cada nivel: mission, fragment, fragType, word, say, hint, question,
+   options[{label, emoji}], correct (índice), explanation, remember, goal
+   NOTA: las opciones se barajan al mostrarse, así que la posición de la
+   respuesta correcta cambia en cada nivel.
+   ======================================================================= */
+const MUNDOS = [
+  {
+    letra:"M", nombre:"La letra M", mascota:"Memo el mono", emoji:"🐵",
+    paleta:{bg:"#EAF8FF",primary:"#4FB6E0",secondary:"#7FD0F0",light:"#D6F0FB",accent:"#FFD23F",shadow:"#2E96C2"},
+    leccion:{
+      exp:"La M suena <b>mmm</b>, con los labios juntitos, como cuando algo te gusta mucho. Con la M y las vocales formamos sílabas: ma, me, mi, mo, mu.",
+      claveEt:"Clave de Memo 🔑",
+      clave:"La M son <b>dos montañas</b>. Mayúscula (M): abajo, abajo, arriba y abajo. Minúscula (m): un palito y dos montañitas.",
+      conceptos:[
+        {ic:"👄",ti:"Su sonido",tx:"mmm (labios juntos)"},
+        {ic:"✍️",ti:"Su trazo",tx:"Dos montañas (M y m)"},
+        {ic:"🔤",ti:"Sus sílabas",tx:"MA · ME · MI · MO · MU"}
+      ]
+    },
+    niveles:[
+      {mission:"El sonido de la M",fragment:"🐵",fragType:"emoji",say:"mmm",hint:"Junta los labios y di… mmm",question:"¿Qué sonido hace la M?",options:[{label:"mmm"},{label:"sss"},{label:"ppp"}],correct:0,explanation:"¡Sí! La M suena mmm, con los labios juntitos.",remember:"La M suena mmm.",goal:"Reconocer el sonido de la M."},
+      {mission:"El trazo de la M",fragment:"M m",fragType:"letra",hint:"Mira la letra: ¿a qué se parece?",question:"¿A qué se parece la M?",options:[{label:"Dos montañas",emoji:"⛰️⛰️"},{label:"Un círculo",emoji:"⭕"},{label:"Una culebra",emoji:"〰️"}],correct:0,explanation:"La M son dos montañas. Mayúscula (M): abajo, abajo, arriba y abajo. Minúscula (m): un palito y dos montañitas.",remember:"M = dos montañas.",goal:"Reconocer el trazo de la M."},
+      {mission:"La sílaba que empieza",fragment:"🦋",fragType:"emoji",word:"mariposa",say:"mariposa",hint:"Escucha despacio: ma-ri-po-sa.",question:"¿Con qué sílaba empieza mariposa?",options:[{label:"MA"},{label:"MO"},{label:"MU"}],correct:0,explanation:"Mariposa empieza con MA (M + A).",remember:"M + A = MA.",goal:"Identificar la sílaba inicial."},
+      {mission:"La sílaba que empieza",fragment:"🐵",fragType:"emoji",word:"mono",say:"mono",hint:"Escucha: mo-no.",question:"¿Con qué sílaba empieza mono?",options:[{label:"MA"},{label:"MI"},{label:"MO"}],correct:2,explanation:"Mono empieza con MO (M + O).",remember:"M + O = MO.",goal:"Identificar la sílaba inicial."},
+      {mission:"¿Cuál empieza con M?",fragment:"🔎",fragType:"emoji",say:"¿Cuál empieza con eme?",hint:"Di el nombre de cada dibujo en voz alta.",question:"¿Cuál empieza con la M?",options:[{label:"mariposa",emoji:"🦋"},{label:"sol",emoji:"☀️"},{label:"pato",emoji:"🦆"}],correct:0,explanation:"Mariposa empieza con M (mmm).",remember:"Escucho el primer sonido para saber la letra.",goal:"Distinguir palabras que empiezan por M."}
+    ]
+  },
+  {
+    letra:"S", nombre:"La letra S", mascota:"Susi la serpiente", emoji:"🐍",
+    paleta:{bg:"#EEFBF0",primary:"#54C07A",secondary:"#8AD89E",light:"#D8F3DF",accent:"#FFE15C",shadow:"#379B5B"},
+    leccion:{
+      exp:"La S suena <b>sss</b>, como una serpiente: ssssss. Con la S y las vocales formamos: sa, se, si, so, su.",
+      claveEt:"Clave de Susi 🔑",
+      clave:"La S es una <b>serpiente</b> que baja <b>de arriba hacia abajo</b>, haciendo curvas. La mayúscula (S) y la minúscula (s) se hacen igual, solo cambia el tamaño.",
+      conceptos:[
+        {ic:"👄",ti:"Su sonido",tx:"sss (como serpiente)"},
+        {ic:"✍️",ti:"Su trazo",tx:"Una serpiente (S y s)"},
+        {ic:"🔤",ti:"Sus sílabas",tx:"SA · SE · SI · SO · SU"}
+      ]
+    },
+    niveles:[
+      {mission:"El sonido de la S",fragment:"🐍",fragType:"emoji",say:"sss",hint:"Haz como la serpiente: ssssss",question:"¿Qué sonido hace Susi la serpiente?",options:[{label:"sss"},{label:"mmm"},{label:"nnn"}],correct:0,explanation:"¡Sí! La S suena sss, como una serpiente.",remember:"La S suena sss.",goal:"Reconocer el sonido de la S."},
+      {mission:"El trazo de la S",fragment:"S s",fragType:"letra",hint:"Mira su forma curvita que baja.",question:"¿A qué se parece la S?",options:[{label:"A una serpiente",emoji:"🐍"},{label:"A dos montañas",emoji:"⛰️"},{label:"A un palito",emoji:"➖"}],correct:0,explanation:"La S es una serpiente que baja de arriba hacia abajo, haciendo curvas. La S y la s se hacen igual.",remember:"S = serpiente que baja.",goal:"Reconocer el trazo de la S."},
+      {mission:"La sílaba que empieza",fragment:"☀️",fragType:"emoji",word:"sol",say:"sol",hint:"Escucha: sol.",question:"¿Con qué sílaba empieza sol?",options:[{label:"SA"},{label:"SO"},{label:"SU"}],correct:1,explanation:"Sol empieza con SO (S + O).",remember:"S + O = SO.",goal:"Identificar la sílaba inicial."},
+      {mission:"La sílaba que empieza",fragment:"🍉",fragType:"emoji",word:"sandía",say:"sandía",hint:"Escucha: san-dí-a.",question:"¿Con qué sílaba empieza sandía?",options:[{label:"SA"},{label:"SE"},{label:"SI"}],correct:0,explanation:"Sandía empieza con SA (S + A).",remember:"S + A = SA.",goal:"Identificar la sílaba inicial."},
+      {mission:"¿Cuál empieza con S?",fragment:"🔎",fragType:"emoji",say:"¿Cuál empieza con ese?",hint:"Di el nombre de cada dibujo.",question:"¿Cuál empieza con la S?",options:[{label:"sapo",emoji:"🐸"},{label:"manzana",emoji:"🍎"},{label:"pato",emoji:"🦆"}],correct:0,explanation:"Sapo empieza con S (sss).",remember:"Escucho el primer sonido.",goal:"Distinguir palabras que empiezan por S."}
+    ]
+  },
+  {
+    letra:"P", nombre:"La letra P", mascota:"Pepe el pato", emoji:"🦆",
+    paleta:{bg:"#FBEFF8",primary:"#E87FB8",secondary:"#B57CE0",light:"#F8E1F1",accent:"#7E3FB8",shadow:"#C75F9C"},
+    leccion:{
+      exp:"La P suena <b>p</b>, cortita, como una burbujita que explota: ¡p! Con la P y las vocales formamos: pa, pe, pi, po, pu.",
+      claveEt:"Clave de Pepe 🔑",
+      clave:"La P se parece a una <b>banderita</b>: un palito y la tela arriba. Mayúscula (P): bajo el palito y arriba hago la pancita. Minúscula (p): el palito baja un poquito más y la pancita va a la derecha.",
+      conceptos:[
+        {ic:"👄",ti:"Su sonido",tx:"p (cortito)"},
+        {ic:"✍️",ti:"Su trazo",tx:"Una banderita (P y p)"},
+        {ic:"🔤",ti:"Sus sílabas",tx:"PA · PE · PI · PO · PU"}
+      ]
+    },
+    niveles:[
+      {mission:"El sonido de la P",fragment:"🦆",fragType:"emoji",say:"pa",hint:"Junta los labios y… ¡p!",question:"¿Qué sonido hace la P?",options:[{label:"p"},{label:"sss"},{label:"mmm"}],correct:0,explanation:"¡Sí! La P suena p, cortita, como una burbujita que explota.",remember:"La P suena p.",goal:"Reconocer el sonido de la P."},
+      {mission:"El trazo de la P",fragment:"P p",fragType:"letra",hint:"Un palito y algo arriba que parece tela.",question:"¿A qué se parece la P?",options:[{label:"A una bandera",emoji:"🚩"},{label:"A dos montañas",emoji:"⛰️"},{label:"A una culebra",emoji:"〰️"}],correct:0,explanation:"La P se parece a una banderita: un palito y la pancita (la tela) arriba. Mayúscula (P): bajo el palito y arriba hago la pancita. Minúscula (p): el palito baja más abajo y la pancita va a la derecha.",remember:"P = palito con banderita.",goal:"Reconocer el trazo de la P."},
+      {mission:"La sílaba que empieza",fragment:"🦆",fragType:"emoji",word:"pato",say:"pato",hint:"Escucha: pa-to.",question:"¿Con qué sílaba empieza pato?",options:[{label:"PA"},{label:"PE"},{label:"PO"}],correct:0,explanation:"Pato empieza con PA (P + A).",remember:"P + A = PA.",goal:"Identificar la sílaba inicial."},
+      {mission:"La sílaba que empieza",fragment:"⚽",fragType:"emoji",word:"pelota",say:"pelota",hint:"Escucha: pe-lo-ta.",question:"¿Con qué sílaba empieza pelota?",options:[{label:"PA"},{label:"PE"},{label:"PI"}],correct:1,explanation:"Pelota empieza con PE (P + E).",remember:"P + E = PE.",goal:"Identificar la sílaba inicial."},
+      {mission:"¿Cuál empieza con P?",fragment:"🔎",fragType:"emoji",say:"¿Cuál empieza con pe?",hint:"Di el nombre de cada dibujo.",question:"¿Cuál empieza con la P?",options:[{label:"perro",emoji:"🐶"},{label:"sol",emoji:"☀️"},{label:"mono",emoji:"🐵"}],correct:0,explanation:"Perro empieza con P (p).",remember:"Escucho el primer sonido.",goal:"Distinguir palabras que empiezan por P."}
+    ]
+  },
+  {
+    letra:"N", nombre:"La letra N", mascota:"Nina la nutria", emoji:"🦦",
+    paleta:{bg:"#E8FBFA",primary:"#2FC2BE",secondary:"#6FD9D5",light:"#D3F4F2",accent:"#5BB6E8",shadow:"#1FA6A2"},
+    leccion:{
+      exp:"La N suena <b>nnn</b>. La lengua toca arriba, detrás de los dientes. Con la N y las vocales formamos: na, ne, ni, no, nu.",
+      claveEt:"Clave de Nina 🔑",
+      clave:"La N tiene <b>una montaña</b> (la M tiene dos). Mayúscula (N): abajo, abajo en diagonal y arriba. Minúscula (n): un palito y una montañita.",
+      conceptos:[
+        {ic:"👄",ti:"Su sonido",tx:"nnn (lengua arriba)"},
+        {ic:"✍️",ti:"Su trazo",tx:"Una montaña (N y n)"},
+        {ic:"🔤",ti:"Sus sílabas",tx:"NA · NE · NI · NO · NU"}
+      ]
+    },
+    niveles:[
+      {mission:"El sonido de la N",fragment:"🦦",fragType:"emoji",say:"nnn",hint:"La lengua toca arriba: nnn.",question:"¿Qué sonido hace la N?",options:[{label:"nnn"},{label:"sss"},{label:"p"}],correct:0,explanation:"¡Sí! La N suena nnn, con la lengua arriba.",remember:"La N suena nnn.",goal:"Reconocer el sonido de la N."},
+      {mission:"El trazo de la N",fragment:"N n",fragType:"letra",hint:"Cuenta las montañas: ¿una o dos?",question:"¿Cuántas montañas tiene la N?",options:[{label:"Una",emoji:"⛰️"},{label:"Dos",emoji:"⛰️⛰️"},{label:"Tres",emoji:"🏔️"}],correct:0,explanation:"La N tiene una montaña; la M tiene dos. Mayúscula (N): abajo, abajo en diagonal y arriba. Minúscula (n): un palito y una montañita.",remember:"N = una montaña, M = dos.",goal:"Distinguir el trazo de N y M."},
+      {mission:"La sílaba que empieza",fragment:"👃",fragType:"emoji",word:"nariz",say:"nariz",hint:"Escucha: na-riz.",question:"¿Con qué sílaba empieza nariz?",options:[{label:"NA"},{label:"NE"},{label:"NI"}],correct:0,explanation:"Nariz empieza con NA (N + A).",remember:"N + A = NA.",goal:"Identificar la sílaba inicial."},
+      {mission:"La sílaba que empieza",fragment:"🪺",fragType:"emoji",word:"nido",say:"nido",hint:"Escucha: ni-do.",question:"¿Con qué sílaba empieza nido?",options:[{label:"NA"},{label:"NI"},{label:"NU"}],correct:1,explanation:"Nido empieza con NI (N + I).",remember:"N + I = NI.",goal:"Identificar la sílaba inicial."},
+      {mission:"¿Cuál empieza con N?",fragment:"🔎",fragType:"emoji",say:"¿Cuál empieza con ene?",hint:"Di el nombre de cada dibujo.",question:"¿Cuál empieza con la N?",options:[{label:"nube",emoji:"☁️"},{label:"pato",emoji:"🦆"},{label:"serpiente",emoji:"🐍"}],correct:0,explanation:"Nube empieza con N (nnn).",remember:"Escucho el primer sonido.",goal:"Distinguir palabras que empiezan por N."}
+    ]
+  },
+  {
+    letra:"📖", nombre:"¡Vamos a leer!", mascota:"Todas las letras juntas", emoji:"📖",
+    final:true,
+    paleta:{bg:"#FCF6FF",primary:"#8E6FD0",secondary:"#B9A2E8",light:"#EFE7FB",accent:"#FFD23F",shadow:"#6A4FB0"},
+    leccion:{
+      exp:"¡Ya conoces la M, la S, la P y la N! Ahora vamos a <b>juntar</b> sílabas para leer palabras de verdad.",
+      claveEt:"Clave de lectura 🔑",
+      clave:"Junto dos sílabas y… ¡leo una palabra! Ejemplo: <b>MA + PA = mapa</b>.",
+      conceptos:[
+        {ic:"🧩",ti:"Junto",tx:"Uno las sílabas"},
+        {ic:"👀",ti:"Leo",tx:"Despacito, sin afán"},
+        {ic:"📖",ti:"¡Palabra!",tx:"Descubro qué dice"}
+      ]
+    },
+    niveles:[
+      {mission:"Junta las sílabas",fragment:"MA + MÁ",fragType:"silabas",word:"mamá",say:"mamá",hint:"Lee despacio: ma-má.",question:"¿Qué palabra formé?",options:[{label:"mamá",emoji:"👩"},{label:"papá",emoji:"👨"},{label:"mono",emoji:"🐵"}],correct:0,explanation:"MA + MÁ = mamá. 👩",remember:"Junto sílabas y leo palabras.",goal:"Leer palabras con M."},
+      {mission:"Junta las sílabas",fragment:"PA + PÁ",fragType:"silabas",word:"papá",say:"papá",hint:"Lee: pa-pá.",question:"¿Qué palabra formé?",options:[{label:"papá",emoji:"👨"},{label:"mamá",emoji:"👩"},{label:"sapo",emoji:"🐸"}],correct:0,explanation:"PA + PÁ = papá. 👨",remember:"Leo juntando las sílabas.",goal:"Leer palabras con P."},
+      {mission:"Junta las sílabas",fragment:"MA + PA",fragType:"silabas",word:"mapa",say:"mapa",hint:"Lee: ma-pa.",question:"¿Qué palabra formé?",options:[{label:"mapa",emoji:"🗺️"},{label:"mesa",emoji:"🪑"},{label:"mono",emoji:"🐵"}],correct:0,explanation:"MA + PA = mapa. 🗺️",remember:"Junto M y P y leo mapa.",goal:"Leer palabras con M y P."},
+      {mission:"Junta las sílabas",fragment:"MO + NO",fragType:"silabas",word:"mono",say:"mono",hint:"Lee: mo-no.",question:"¿Qué palabra formé?",options:[{label:"mono",emoji:"🐵"},{label:"puma",emoji:"🐆"},{label:"sopa",emoji:"🍲"}],correct:0,explanation:"MO + NO = mono. 🐵",remember:"Junto M y N y leo mono.",goal:"Leer palabras con M y N."},
+      {mission:"Junta las sílabas",fragment:"MA + NO",fragType:"silabas",word:"mano",say:"mano",hint:"Lee: ma-no.",question:"¿Qué palabra formé?",options:[{label:"mano",emoji:"🤚"},{label:"mesa",emoji:"🪑"},{label:"pino",emoji:"🌲"}],correct:0,explanation:"MA + NO = mano. 🤚",remember:"Leo despacio cada sílaba.",goal:"Leer palabras con M y N."},
+      {mission:"Junta las sílabas",fragment:"ME + SA",fragType:"silabas",word:"mesa",say:"mesa",hint:"Lee: me-sa.",question:"¿Qué palabra formé?",options:[{label:"mesa",emoji:"🪑"},{label:"mapa",emoji:"🗺️"},{label:"sopa",emoji:"🍲"}],correct:0,explanation:"ME + SA = mesa. 🪑",remember:"Junto M y S y leo mesa.",goal:"Leer palabras con M y S."},
+      {mission:"Junta las sílabas",fragment:"SA + PO",fragType:"silabas",word:"sapo",say:"sapo",hint:"Lee: sa-po.",question:"¿Qué palabra formé?",options:[{label:"sapo",emoji:"🐸"},{label:"pino",emoji:"🌲"},{label:"mano",emoji:"🤚"}],correct:0,explanation:"SA + PO = sapo. 🐸",remember:"Junto S y P y leo sapo.",goal:"Leer palabras con S y P."},
+      {mission:"Junta las sílabas",fragment:"SO + PA",fragType:"silabas",word:"sopa",say:"sopa",hint:"Lee: so-pa.",question:"¿Qué palabra formé?",options:[{label:"sopa",emoji:"🍲"},{label:"mesa",emoji:"🪑"},{label:"puma",emoji:"🐆"}],correct:0,explanation:"SO + PA = sopa. 🍲",remember:"Cada sílaba aporta su sonido.",goal:"Leer palabras con S y P."},
+      {mission:"Junta las sílabas",fragment:"PI + NO",fragType:"silabas",word:"pino",say:"pino",hint:"Lee: pi-no.",question:"¿Qué palabra formé?",options:[{label:"pino",emoji:"🌲"},{label:"puma",emoji:"🐆"},{label:"sapo",emoji:"🐸"}],correct:0,explanation:"PI + NO = pino. 🌲",remember:"Junto P y N y leo pino.",goal:"Leer palabras con P y N."},
+      {mission:"Junta las sílabas",fragment:"PU + MA",fragType:"silabas",word:"puma",say:"puma",hint:"Lee: pu-ma.",question:"¿Qué palabra formé?",options:[{label:"puma",emoji:"🐆"},{label:"pino",emoji:"🌲"},{label:"mamá",emoji:"👩"}],correct:0,explanation:"PU + MA = puma. 🐆",remember:"Junto P y M y leo puma.",goal:"Leer palabras con P y M."},
+      {mission:"Junta las sílabas",fragment:"NE + NE",fragType:"silabas",word:"nene",say:"nene",hint:"Lee: ne-ne.",question:"¿Qué palabra formé?",options:[{label:"nene",emoji:"👶"},{label:"papá",emoji:"👨"},{label:"mono",emoji:"🐵"}],correct:0,explanation:"NE + NE = nene. 👶",remember:"Junto N y N y leo nene.",goal:"Leer palabras con N."},
+      {mission:"¡Reto final!",fragment:"MA + SA",fragType:"silabas",word:"masa",say:"masa",hint:"Lee: ma-sa.",question:"¿Qué palabra formé?",options:[{label:"masa",emoji:"🍞"},{label:"papá",emoji:"👨"},{label:"pino",emoji:"🌲"}],correct:0,explanation:"MA + SA = masa. 🍞 ¡Lo lograste!",remember:"¡Ya leo palabras juntando sílabas!",goal:"Leer palabras con M y S."}
+    ]
+  }
+];
+
+const PALETA_INICIO = {bg:"#F4F8FF",primary:"#6C7BE0",secondary:"#9AA8F0",light:"#E7ECFF",accent:"#FFD23F",shadow:"#4F5CC0"};
+const VIDAS_MAX = 3;
+const TIEMPO_NIVEL = 25;
+
+/* ===================== ESTADO ===================== */
+let sonidoOn = true;
+let mundoActual = 0, nivelActual = 0;
+let puntos = 0, vidas = VIDAS_MAX, aciertosMundo = 0;
+let cronometro = null, tiempoRestante = TIEMPO_NIVEL, ultimoBeep = 0;
+let respondido = false;
+let opcionesActuales = [], correctaActual = 0;
+
+/* ===================== WEB AUDIO ===================== */
+let audioCtx = null;
+function activarAudio(){
+  if(!audioCtx){
+    try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  }
+  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+function tono(freq, dur, tipo='sine', vol=0.16, retraso=0){
+  if(!sonidoOn || !audioCtx) return;
+  const t = audioCtx.currentTime + retraso;
+  const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+  o.type = tipo; o.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(vol, t+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  o.connect(g).connect(audioCtx.destination);
+  o.start(t); o.stop(t+dur+0.03);
+}
+const sfx = {
+  inicio(){ tono(523,.14); tono(659,.14,'sine',.16,.12); tono(784,.2,'sine',.16,.24); },
+  select(){ tono(440,.07,'triangle',.12); },
+  acierto(){ [523,659,784,1047].forEach((f,i)=>tono(f,.16,'sine',.16,i*.1)); },
+  error(){ tono(196,.28,'sawtooth',.12); tono(150,.32,'sawtooth',.1,.12); },
+  alerta(){ tono(880,.08,'square',.09); }
+};
+
+/* ===================== VOZ ===================== */
+function hablar(txt){
+  if(!sonidoOn || !txt || !('speechSynthesis' in window)) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(txt);
+    u.lang='es-ES'; u.rate=0.85; u.pitch=1.12;
+    const v = speechSynthesis.getVoices().find(x=>/es[-_]/i.test(x.lang));
+    if(v) u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=()=>{}; }
+
+/* ===================== UTILIDAD ===================== */
+function mezclar(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* ===================== TEMA Y NAVEGACIÓN ===================== */
+function aplicarTema(p){
+  const r = document.documentElement.style;
+  r.setProperty('--bg',p.bg); r.setProperty('--primary',p.primary);
+  r.setProperty('--secondary',p.secondary); r.setProperty('--light',p.light);
+  r.setProperty('--accent',p.accent); r.setProperty('--shadow',p.shadow);
+}
+function mostrar(id){
+  document.querySelectorAll('.pantalla').forEach(p=>p.classList.remove('activa'));
+  document.getElementById(id).classList.add('activa');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function irInicio(){
+  pararCrono(); cerrarModal();
+  aplicarTema(PALETA_INICIO);
+  mostrar('inicio');
+}
+
+/* ===================== INICIO ===================== */
+function pintarInicio(){
+  const grid = document.getElementById('gridMundos');
+  grid.innerHTML = MUNDOS.map((m,i)=>{
+    const p = m.paleta;
+    if(m.final){
+      return `<button class="mundo final" onclick="abrirLeccion(${i})">
+        <span class="insignia">📖</span>
+        <span class="info"><span class="nm">Mundo 5</span>
+        <span class="tt">${m.nombre}</span>
+        <span class="sb">Junto M · S · P · N</span></span></button>`;
+    }
+    return `<button class="mundo" style="background:${p.primary};box-shadow:0 10px 0 ${p.shadow}" onclick="abrirLeccion(${i})">
+      <span class="insignia">${m.letra}<span class="masc">${m.emoji}</span></span>
+      <span class="info"><span class="nm">Mundo ${i+1}</span>
+      <span class="tt">${m.nombre}</span>
+      <span class="sb">${m.mascota}</span></span></button>`;
+  }).join('');
+}
+
+/* ===================== LECCIÓN ===================== */
+function abrirLeccion(i){
+  mundoActual=i; nivelActual=0; vidas=VIDAS_MAX; aciertosMundo=0;
+  const m = MUNDOS[i];
+  aplicarTema(m.paleta);
+  const lec = m.leccion;
+  const insignia = m.final ? '📖' : `${m.letra}<span class="masc">${m.emoji}</span>`;
+  document.getElementById('contLeccion').innerHTML = `
+    <div class="lec-top">
+      <div class="lec-icono">${insignia}</div>
+      <div class="lec-masc">${m.mascota}</div>
+      <h2 class="lec-titulo">${m.nombre}</h2>
+    </div>
+    <p class="lec-exp">${lec.exp}</p>
+    <div class="clave"><span class="et">${lec.claveEt}</span>${lec.clave}</div>
+    <div class="conceptos">
+      ${lec.conceptos.map(c=>`<div class="concepto"><span class="ic">${c.ic}</span>
+        <div class="ti">${c.ti}</div><div class="tx">${c.tx}</div></div>`).join('')}
+    </div>
+    <div class="centro">
+      <button class="btn" onclick="empezarJuego()">¡A jugar! ▶</button>
+      <button class="btn suave" onclick="irInicio()">⬅ Inicio</button>
+    </div>`;
+  hablar(lec.exp.replace(/<[^>]+>/g,''));
+  mostrar('leccion');
+}
+
+/* ===================== JUEGO ===================== */
+function empezarJuego(){
+  sfx.inicio();
+  nivelActual=0; vidas=VIDAS_MAX; aciertosMundo=0;
+  document.getElementById('hudTitulo').textContent = MUNDOS[mundoActual].nombre;
+  pintarNivel();
+  mostrar('juego');
+}
+
+function actualizarHud(){
+  document.getElementById('hudPuntos').textContent = puntos;
+  document.getElementById('hudVidas').textContent = '❤️'.repeat(vidas) + '🤍'.repeat(VIDAS_MAX-vidas);
+  const total = MUNDOS[mundoActual].niveles.length;
+  document.getElementById('hudNivel').textContent = 'Nivel ' + (nivelActual+1) + '/' + total;
+  document.getElementById('hudBarra').style.width = (nivelActual/total*100) + '%';
+}
+
+function pintarNivel(){
+  respondido = false;
+  const m = MUNDOS[mundoActual];
+  const lv = m.niveles[nivelActual];
+  actualizarHud();
+
+  // Barajar las opciones para que la respuesta correcta cambie de posición
+  const objCorrecto = lv.options[lv.correct];
+  opcionesActuales = mezclar(lv.options.slice());
+  correctaActual = opcionesActuales.indexOf(objCorrecto);
+
+  let fragHTML = '';
+  if(lv.fragType==='letra') fragHTML = `<div class="frag-letra">${lv.fragment}</div>`;
+  else if(lv.fragType==='silabas') fragHTML = `<div class="frag-silabas">${lv.fragment.replace('+','<span class="mas">+</span>')}</div>`;
+  else fragHTML = `<div class="frag-emoji">${lv.fragment}</div>` + (lv.word?`<div class="frag-word">${lv.word}</div>`:'');
+
+  const opciones = opcionesActuales.map((o,i)=>{
+    const em = o.emoji ? `<span class="em">${o.emoji}</span>` : '';
+    return `<button class="opcion" id="op${i}" onclick="responder(${i})">${em}<span>${o.label}</span><span class="marca" id="mk${i}"></span></button>`;
+  }).join('');
+
+  document.getElementById('contNivel').innerHTML = `
+    <div><span class="mision">${lv.mission}</span><span class="meta">🎯 ${lv.goal}</span></div>
+    <div class="frag">${fragHTML}
+      <div style="margin-top:10px"><button class="leer" onclick="leerNivel()">🔊 Escuchar</button></div>
+    </div>
+    <div class="pista">💡 <b>Pista:</b> ${lv.hint}</div>
+    <p class="pregunta">${lv.question}</p>
+    <div class="opciones">${opciones}</div>`;
+
+  iniciarCrono();
+  setTimeout(leerNivel, 450);
+}
+
+function leerNivel(){
+  const lv = MUNDOS[mundoActual].niveles[nivelActual];
+  hablar(lv.say || lv.word || lv.question);
+}
+
+/* ---------- Temporizador ---------- */
+function iniciarCrono(){
+  pararCrono();
+  tiempoRestante = TIEMPO_NIVEL; ultimoBeep = 0;
+  const barra = document.getElementById('hudTiempo');
+  barra.style.width='100%'; barra.classList.remove('poco');
+  cronometro = setInterval(()=>{
+    tiempoRestante -= 0.1;
+    if(tiempoRestante < 0) tiempoRestante = 0;
+    barra.style.width = (tiempoRestante/TIEMPO_NIVEL*100) + '%';
+    if(tiempoRestante <= 5){
+      barra.classList.add('poco');
+      const seg = Math.ceil(tiempoRestante);
+      if(seg !== ultimoBeep && seg>0){ ultimoBeep = seg; sfx.alerta(); }
+    }
+    if(tiempoRestante <= 0){ pararCrono(); seAcaboTiempo(); }
+  },100);
+}
+function pararCrono(){ if(cronometro){ clearInterval(cronometro); cronometro=null; } }
+
+function seAcaboTiempo(){
+  if(respondido) return;
+  respondido = true;
+  bloquearOpciones();
+  vidas--; actualizarHud(); sfx.error();
+  const lv = MUNDOS[mundoActual].niveles[nivelActual];
+  const correcta = opcionesActuales[correctaActual].label;
+  marcarCorrecta();
+  if(vidas<=0){ modalGameOver(); }
+  else { modalFeedback('timeout', `Se acabó el tiempo. La respuesta era: <b>${correcta}</b>.`, lv); }
+}
+
+/* ---------- Responder ---------- */
+function responder(i){
+  if(respondido) return;
+  activarAudio(); sfx.select();
+  respondido = true;
+  pararCrono();
+  bloquearOpciones();
+  const lv = MUNDOS[mundoActual].niveles[nivelActual];
+  if(i === correctaActual){
+    document.getElementById('op'+i).classList.add('correcta');
+    document.getElementById('mk'+i).textContent = '✓';
+    puntos += 10; aciertosMundo++; actualizarHud();
+    sfx.acierto(); confeti(); hablar('¡Muy bien!');
+    modalFeedback('ok', lv.explanation, lv);
+  }else{
+    document.getElementById('op'+i).classList.add('incorrecta');
+    document.getElementById('mk'+i).textContent = '✗';
+    marcarCorrecta();
+    vidas--; actualizarHud(); sfx.error(); hablar('Casi, inténtalo otra vez');
+    const correcta = opcionesActuales[correctaActual].label;
+    if(vidas<=0){ modalGameOver(); }
+    else { modalFeedback('mal', `La respuesta correcta es: <b>${correcta}</b>. ${lv.explanation}`, lv); }
+  }
+}
+function bloquearOpciones(){ document.querySelectorAll('.opcion').forEach(b=>b.disabled=true); }
+function marcarCorrecta(){
+  const ok = document.getElementById('op'+correctaActual);
+  if(ok && !ok.classList.contains('correcta')){
+    ok.classList.add('correcta');
+    document.getElementById('mk'+correctaActual).textContent='✓';
+  }
+}
+
+/* ===================== MODAL ===================== */
+function modalFeedback(tipo, texto, lv){
+  const box = document.getElementById('modalBox');
+  let emoji, titulo, clase, boton, accion;
+  if(tipo==='ok'){
+    emoji='🎉'; titulo='¡Correcto!'; clase='bien';
+    const ultimo = nivelActual === MUNDOS[mundoActual].niveles.length-1;
+    boton = ultimo ? '¡Terminé! 🏆' : 'Siguiente ▶';
+    accion = 'siguienteNivel()';
+  }else if(tipo==='timeout'){
+    emoji='⏰'; titulo='¡Se acabó el tiempo!'; clase='casi';
+    boton='Intentar otra vez 🔁'; accion='reintentarNivel()';
+  }else{
+    emoji='💪'; titulo='¡Casi!'; clase='casi';
+    boton='Intentar otra vez 🔁'; accion='reintentarNivel()';
+  }
+  box.innerHTML = `
+    <div class="modal-emoji">${emoji}</div>
+    <div class="modal-titulo ${clase}">${titulo}</div>
+    <p class="modal-texto">${texto}</p>
+    <div class="modal-recuerda"><span class="et">⭐ Recuerda:</span> ${lv.remember}</div>
+    <button class="btn" onclick="${accion}">${boton}</button>`;
+  abrirModal();
+}
+function modalGameOver(){
+  const box = document.getElementById('modalBox');
+  box.innerHTML = `
+    <div class="modal-emoji">😅</div>
+    <div class="modal-titulo casi">¡Se acabaron las vidas!</div>
+    <p class="modal-texto">No te preocupes, lo importante es practicar. ¡Vuelve a intentarlo!</p>
+    <button class="btn" onclick="empezarJuegoDeNuevo()">Repetir mundo 🔁</button>
+    <button class="btn suave" onclick="cerrarModal();irInicio()">Inicio 🏠</button>`;
+  abrirModal();
+}
+function abrirModal(){ document.getElementById('modal').classList.add('activo'); }
+function cerrarModal(){ document.getElementById('modal').classList.remove('activo'); }
+
+function siguienteNivel(){
+  cerrarModal();
+  nivelActual++;
+  if(nivelActual < MUNDOS[mundoActual].niveles.length){ pintarNivel(); }
+  else { finDeMundo(); }
+}
+function reintentarNivel(){ cerrarModal(); pintarNivel(); }
+function empezarJuegoDeNuevo(){ cerrarModal(); empezarJuego(); }
+
+/* ===================== FIN DE MUNDO ===================== */
+function finDeMundo(){
+  pararCrono();
+  document.getElementById('hudBarra').style.width='100%';
+  const total = MUNDOS[mundoActual].niveles.length;
+  const prop = aciertosMundo/total;
+  const estrellas = prop>=0.99 ? '⭐⭐⭐' : prop>=0.6 ? '⭐⭐' : '⭐';
+  const hayOtro = mundoActual < MUNDOS.length-1;
+  const m = MUNDOS[mundoActual];
+  document.getElementById('contFin').innerHTML = `
+    <div class="fin-emoji">${m.emoji}🎉</div>
+    <h2 class="lec-titulo">¡Terminaste ${m.nombre}!</h2>
+    <div class="fin-estrellas">${estrellas}</div>
+    <p class="modal-texto">Acertaste <b>${aciertosMundo}</b> de <b>${total}</b> y llevas <b>${puntos}</b> puntos.</p>
+    ${hayOtro ? `<button class="btn acento" onclick="abrirLeccion(${mundoActual+1})">Siguiente mundo ▶</button>` :
+                `<button class="btn acento" onclick="irInicio()">🏠 Volver al inicio</button>`}
+    <button class="btn suave" onclick="abrirLeccion(${mundoActual})">Repetir 🔁</button>`;
+  sfx.acierto(); confeti(true); hablar('¡Lo lograste! ¡Muy bien!');
+  mostrar('fin');
+}
+
+/* ===================== CONFETI ===================== */
+function confeti(grande=false){
+  const cont = document.getElementById('confeti');
+  const cols = ['#4FB6E0','#54C07A','#E87FB8','#2FC2BE','#FFD23F','#B57CE0'];
+  const n = grande ? 70 : 28;
+  for(let i=0;i<n;i++){
+    const d = document.createElement('div');
+    d.className='conf';
+    d.style.left = (8+Math.random()*84)+'vw';
+    d.style.top = '-20px';
+    d.style.background = cols[Math.floor(Math.random()*cols.length)];
+    const s = 8+Math.random()*9; d.style.width=d.style.height=s+'px';
+    if(Math.random()<0.5) d.style.borderRadius='50%';
+    d.style.animationDuration = (1.3+Math.random()*1.3)+'s';
+    cont.appendChild(d);
+    setTimeout(()=>d.remove(), 2700);
+  }
+}
+
+/* ===================== AMBIENTE FLOTANTE ===================== */
+function pintarAmbiente(){
+  const cont = document.getElementById('ambiente');
+  const items = ['📚','✏️','📖','📓','🖍️','🎨','M','S','P','N','a','e','i','o','u','🔤'];
+  let html='';
+  for(let i=0;i<16;i++){
+    const it = items[i % items.length];
+    const left = Math.random()*92;
+    const top = Math.random()*92;
+    const dur = 7+Math.random()*7;
+    const del = -Math.random()*7;
+    const size = 1.6+Math.random()*1.8;
+    const esLetra = /^[a-zMSPN]$/.test(it);
+    const estilo = esLetra ? `font-family:var(--display);font-weight:700;color:var(--primary);` : '';
+    html += `<span class="flota" style="left:${left}%;top:${top}%;font-size:${size}rem;animation-duration:${dur}s;animation-delay:${del}s;${estilo}">${it}</span>`;
+  }
+  cont.innerHTML = html;
+}
+
+/* ===================== SONIDO TOGGLE ===================== */
+function toggleSonido(){
+  sonidoOn = !sonidoOn;
+  if(!sonidoOn && 'speechSynthesis' in window) speechSynthesis.cancel();
+  ['sonidoInicio','sonidoJuego'].forEach(id=>{
+    const b = document.getElementById(id);
+    b.textContent = sonidoOn ? '🔊' : '🔇';
+    b.classList.toggle('off', !sonidoOn);
+  });
+}
+document.getElementById('sonidoInicio').addEventListener('click', ()=>{ activarAudio(); toggleSonido(); });
+document.getElementById('sonidoJuego').addEventListener('click', ()=>{ activarAudio(); toggleSonido(); });
+
+/* Activar audio en el primer toque (políticas del navegador) */
+document.addEventListener('pointerdown', activarAudio, {once:true});
+
+/* ===================== ARRANQUE ===================== */
+aplicarTema(PALETA_INICIO);
+pintarAmbiente();
+pintarInicio();
+</script>
+</body>
+</html>
